@@ -25,7 +25,8 @@ async function loadDashboard() {
 
   } catch(err){
 
-    console.error(err);
+    console.error("SMART ROOM ERROR", err);
+alert(err);
 
   }
 
