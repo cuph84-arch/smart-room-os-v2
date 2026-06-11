@@ -4,27 +4,32 @@ const API_URL =
 loadDashboard();
 setInterval(loadDashboard, 30000);
 
-async function loadDashboard() {
-  try {
-    const res = await fetch(API_URL, {
-  method: "GET",
-  redirect: "follow",
-  cache: "no-store"
-});
-    const data = await res.json();
+function loadDashboard() {
+  const cached = localStorage.getItem("smartRoomData");
 
-    updateAC(data.devices?.ac);
-    updateClimate(data.devices?.climate);
-    updateLamp(data.devices?.lamp);
-    updateTV(data.devices?.tv);
-    updateCCTV(data.devices?.cctv);
-    updatePlug(data.devices?.smartplug);
-    updateStats(data.dailyStats);
-    updateFeed(data.activityFeed);
-
-  } catch (err) {
-    console.error("SMART ROOM ERROR", err);
+  if (cached) {
+    try {
+      renderDashboard(JSON.parse(cached));
+    } catch (e) {
+      console.error("Cache rusak", e);
+    }
   }
+
+  loadJSONP(API_URL, function(data) {
+    localStorage.setItem("smartRoomData", JSON.stringify(data));
+    renderDashboard(data);
+  });
+}
+
+function renderDashboard(data) {
+  updateAC(data.devices?.ac);
+  updateClimate(data.devices?.climate);
+  updateLamp(data.devices?.lamp);
+  updateTV(data.devices?.tv);
+  updateCCTV(data.devices?.cctv);
+  updatePlug(data.devices?.smartplug);
+  updateStats(data.dailyStats);
+  updateFeed(data.activityFeed);
 }
 
 function setText(id, value) {
