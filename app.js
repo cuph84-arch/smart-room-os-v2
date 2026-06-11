@@ -22,6 +22,10 @@ function loadDashboard() {
 }
 
 function renderDashboard(data) {
+  setText(
+  "lastUpdate",
+  formatDate(data.updatedAt)
+);
   updateAC(data.devices?.ac);
   updateClimate(data.devices?.climate);
   updateLamp(data.devices?.lamp);
