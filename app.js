@@ -6,7 +6,11 @@ setInterval(loadDashboard, 30000);
 
 async function loadDashboard() {
   try {
-    const res = await fetch(API_URL);
+    const res = await fetch(API_URL, {
+  method: "GET",
+  redirect: "follow",
+  cache: "no-store"
+});
     const data = await res.json();
 
     updateAC(data.devices?.ac);
