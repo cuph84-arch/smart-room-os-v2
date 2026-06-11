@@ -186,3 +186,32 @@ h2{
   margin-top:4px;
   font-size:12px;
 }
+
+.lamp-card{
+  text-align:center;
+}
+
+.lamp-header{
+  font-size:18px;
+  margin-bottom:10px;
+}
+
+.lamp-power{
+  font-size:32px;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+.lamp-brightness,
+.lamp-color{
+  opacity:.9;
+  margin-top:6px;
+}
+
+.lamp-slider-wrap{
+  margin-top:16px;
+}
+
+.lamp-slider-wrap input{
+  width:100%;
+}
