@@ -2,13 +2,10 @@ const API_URL =
 "https://script.google.com/macros/s/AKfycbwYUMIjajxgFPJzbx2Nz9UXBB-LdjkGcyenMnk3hWVTRqtuz9C1P3k9Zra-3P-mvCf1/exec?action=dashboard";
 
 loadDashboard();
-
 setInterval(loadDashboard, 30000);
 
 async function loadDashboard() {
-
   try {
-
     const res = await fetch(API_URL);
     const data = await res.json();
 
@@ -18,172 +15,110 @@ async function loadDashboard() {
     updateTV(data.devices?.tv);
     updateCCTV(data.devices?.cctv);
     updatePlug(data.devices?.smartplug);
-
     updateStats(data.dailyStats);
-
     updateFeed(data.activityFeed);
 
-  } catch(err){
-
+  } catch (err) {
     console.error("SMART ROOM ERROR", err);
-alert(err);
-
   }
-
 }
 
-function updateAC(ac){
-
-  if(!ac) return;
-
-  document.getElementById("acTemp").textContent =
-    (ac.temperature || "--") + "°";
-
-  document.getElementById("acMode").textContent =
-    ac.mode || "-";
-
-  document.getElementById("acFan").textContent =
-    "🌀 " + (ac.fan || "-");
-
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
 }
 
-function updateClimate(climate){
+function updateAC(ac) {
+  if (!ac) return;
 
-  if(!climate) return;
-
-  document.getElementById("roomTemp").textContent =
-    (climate.temperature || "--") + "°C";
-
-  document.getElementById("roomHumidity").textContent =
-    (climate.humidity || "--") + "%";
-
+  setText("acTemp", (ac.temperature || "--") + "°");
+  setText("acMode", ac.mode || "-");
+  setText("acFan", "🌀 " + (ac.fan || "-"));
 }
 
-function updateLamp(lamp){
+function updateClimate(climate) {
+  if (!climate) return;
 
-  if(!lamp) return;
+  setText("roomTemp", (climate.temperature || "--") + "°C");
+  setText("roomHumidity", (climate.humidity || "--") + "%");
+}
 
-  document.getElementById("lampStatus").textContent =
-    lamp.power || "OFF";
+function updateLamp(lamp) {
+  if (!lamp) return;
 
-  document.getElementById("lampBrightness").textContent =
-    (lamp.brightness || "--") + "%";
+  setText("lampStatus", lamp.power || "OFF");
+  setText("lampBrightness", (lamp.brightness ?? "--") + "%");
+  setText("lampColor", lamp.mode || "-");
 
-  document.getElementById("lampColor").textContent =
-    lamp.mode || "-";
-
-  const slider =
-    document.getElementById("lampSlider");
-
-  if(slider && lamp.brightness){
-
-    slider.value =
-      lamp.brightness;
-
+  const slider = document.getElementById("lampSlider");
+  if (slider && lamp.brightness !== undefined) {
+    slider.value = lamp.brightness;
   }
-
 }
 
-function updateTV(tv){
+function updateTV(tv) {
+  if (!tv) return;
 
-  if(!tv) return;
-
-  const text =
-    tv.power === "ON"
-      ? "ON"
-      : "OFF";
-
-  document.getElementById("tvStatus").textContent =
-    text;
-
+  setText("tvStatus", tv.power === "ON" ? "ON" : "OFF");
 }
 
-function updateCCTV(cctv){
+function updateCCTV(cctv) {
+  if (!cctv) return;
 
-  if(!cctv) return;
-
-  document.getElementById("cctvStatus").textContent =
-    cctv.online || "-";
-
+  setText("cctvStatus", cctv.online || "-");
 }
 
-function updatePlug(plug){
+function updatePlug(plug) {
+  if (!plug) return;
 
-  if(!plug) return;
-
-  document.getElementById("plugPower").textContent =
-    (plug.power || 0) + " W";
-
+  setText("plugPower", (plug.power ?? 0) + " W");
 }
 
-function updateStats(stats){
+function updateStats(stats) {
+  if (!stats) return;
 
-  if(!stats) return;
-
-  document.getElementById("motionToday").textContent =
-    stats.motionToday || 0;
-
-  document.getElementById("tvEvents").textContent =
-    stats.tvEventsToday || 0;
-
-  document.getElementById("acEvents").textContent =
-    stats.acEventsToday || 0;
-
-  document.getElementById("lampEvents").textContent =
-    stats.lampEventsToday || 0;
-
+  setText("motionToday", stats.motionToday || 0);
+  setText("tvEvents", stats.tvEventsToday || 0);
+  setText("acEvents", stats.acEventsToday || 0);
+  setText("lampEvents", stats.lampEventsToday || 0);
 }
 
-function updateFeed(feed){
+function updateFeed(feed) {
+  const container = document.getElementById("activityFeed");
+  if (!container) return;
 
-  const container =
-    document.getElementById("activityFeed");
-
-  if(!feed || !feed.length){
-
-    container.innerHTML =
-      '<div class="feed-item">Tidak ada aktivitas</div>';
-
+  if (!feed || !feed.length) {
+    container.innerHTML = '<div class="feed-item">Tidak ada aktivitas</div>';
     return;
   }
 
   container.innerHTML = "";
 
   feed.forEach(item => {
-
-    const div =
-      document.createElement("div");
-
-    div.className =
-      "feed-item";
+    const div = document.createElement("div");
+    div.className = "feed-item";
 
     div.innerHTML = `
       <div class="feed-title">
-        ${item.icon || ""}
-        ${item.title || ""}
+        ${item.icon || ""} ${item.title || ""}
       </div>
-
       <div class="feed-detail">
         ${item.detail || ""}
       </div>
-
       <div class="feed-time">
         ${formatDate(item.timestamp)}
       </div>
     `;
 
     container.appendChild(div);
-
   });
-
 }
 
-function formatDate(dateStr){
-
-  if(!dateStr) return "-";
+function formatDate(dateStr) {
+  if (!dateStr) return "-";
 
   const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
 
   return d.toLocaleString("id-ID");
-
 }
