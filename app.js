@@ -65,6 +65,22 @@ function updateLamp(lamp){
   document.getElementById("lampStatus").textContent =
     lamp.power || "OFF";
 
+  document.getElementById("lampBrightness").textContent =
+    (lamp.brightness || "--") + "%";
+
+  document.getElementById("lampColor").textContent =
+    lamp.mode || "-";
+
+  const slider =
+    document.getElementById("lampSlider");
+
+  if(slider && lamp.brightness){
+
+    slider.value =
+      lamp.brightness;
+
+  }
+
 }
 
 function updateTV(tv){
